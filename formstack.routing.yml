@@ -1,0 +1,11 @@
+
+formstack.formstack_config_form:
+  path: '/admin/config/formstack/config'
+  defaults:
+    _form: '\Drupal\formstack\Form\FormstackConfigForm'
+    _title: 'FormstackConfigForm'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+

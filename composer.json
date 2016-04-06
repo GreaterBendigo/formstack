@@ -1,0 +1,14 @@
+{
+  "name": "drupal/formstack",
+  "type": "drupal-module",
+  "description": "Adds a custom field to embed Formstack forms into a content type page.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/formstack",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "http://drupal.org/project/issues/formstack",
+    "source": "http://cgit.drupalcode.org/formstack"
+  },
+  "require": { }
+}

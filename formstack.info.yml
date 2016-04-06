@@ -1,0 +1,5 @@
+name: Formstack
+type: module
+description: Adds a custom field to embed Formstack forms into a content type page.
+core: 8.x
+package: Forms

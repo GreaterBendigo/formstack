@@ -1,0 +1,4 @@
+services:
+  formstack.formstack:
+    class: Drupal\formstack\Formstack
+    arguments: ['@config.factory']

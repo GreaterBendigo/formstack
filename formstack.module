@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains formstack.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function formstack_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the formstack module.
+    case 'help.page.formstack':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Adds a custom field to embed Formstack forms into a content type page.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
