@@ -71,7 +71,7 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
     $elements = [];
 
     foreach ($items as $delta => $item) {
-      $elements[$delta] = ['#markup' => $this->viewValue($item)];
+      $elements[$delta] = $this->viewValue($item);
     }
     return $elements;
   }
@@ -86,9 +86,14 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
+
     $result = $this->formstack->form($item->formstack_id);
 
-    return $result->getResult()->javascript;
+    return [
+        '#type' => 'inline_template',
+        '#template' => '{{ value|raw }}',
+        '#context' => ['value' => Html::decodeEntities($result->getResult()->javascript)],
+    ];
   }
 
   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, Formstack $formstack) {
