@@ -86,7 +86,6 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-
     $result = $this->formstack->form($item->formstack_id);
 
     return [
