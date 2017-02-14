@@ -92,12 +92,6 @@ class FormstackResult
             $form_options[$form_option->id] = $form_option->name;
         }
 
-        $empty_option = array(
-            'noform' => t('-No form-'),
-        );
-
-        $form_options = $empty_option + $form_options;
-
         return $form_options;
     }
 

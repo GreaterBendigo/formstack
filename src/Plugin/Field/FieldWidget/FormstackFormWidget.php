@@ -31,7 +31,7 @@ class FormstackFormWidget extends WidgetBase implements ContainerFactoryPluginIn
     /**
      * @var Formstack
      */
-    protected $formsatck;
+    protected $formstack;
     /**
      * @var LoggerInterface
      */
@@ -57,8 +57,7 @@ class FormstackFormWidget extends WidgetBase implements ContainerFactoryPluginIn
         Formstack $formstack,
         LoggerChannelFactoryInterface $logger) {
 
-
-        $this->formsatck = $formstack;
+        $this->formstack = $formstack;
         $this->logger = $logger->get('formstack');
 
         parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
@@ -72,15 +71,14 @@ class FormstackFormWidget extends WidgetBase implements ContainerFactoryPluginIn
     $widget = $element;
     $widget['#delta'] = $delta;
 
-
     $element = [];
-
-    $formstackResult = $this->formsatck->form();
+    $formstackResult = $this->formstack->form();
 
     if($formstackResult->isSuccessful()) {
         $element['formstack_id'] = $element + array(
                 '#type' => 'select',
                 '#options' => $formstackResult->getFormsList(),
+                '#empty_option' => '-- No Form --',
                 '#default_value' => $items->formstack_id,
             );
     }

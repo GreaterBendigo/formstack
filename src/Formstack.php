@@ -55,7 +55,7 @@ class Formstack implements ContainerInjectionInterface
                 return new FormstackResult($response);
             }
             catch (RequestException $e) {
-                watchdog_exception('formstack', $e->getMessage());
+                watchdog_exception('formstack', $e);
             }
 
             return new FormstackResult();
