@@ -68,10 +68,6 @@ class FormstackFormWidget extends WidgetBase implements ContainerFactoryPluginIn
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $widget = $element;
-    $widget['#delta'] = $delta;
-
-    $element = [];
     $formstackResult = $this->formstack->form();
 
     if($formstackResult->isSuccessful()) {
@@ -83,6 +79,14 @@ class FormstackFormWidget extends WidgetBase implements ContainerFactoryPluginIn
             );
     }
     else {
+        $element['formstack_id'] = array_merge($element, array(
+                '#type' => 'select',
+                '#options' => array(),
+                '#description' => 'Error: ' . $formstackResult->getErrorMessage(),
+                '#empty_option' => '-- No Form --',
+                '#default_value' => $items->formstack_id,
+        ));
+
         $this->logger->
             warning('Formstack Error: @errorcode @errormessage',
             array('@errorcode' => $formstackResult->getStatusCode(), '@errormessage' => $formstackResult->getErrorMessage()));
