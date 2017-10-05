@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\formstack\Plugin\Field\FieldType\FormstackForm.
- */
-
 namespace Drupal\formstack\Plugin\Field\FieldType;
 
 use Drupal\Component\Utility\Random;
@@ -27,15 +22,16 @@ use Drupal\Core\TypedData\DataDefinition;
  * )
  */
 class FormstackForm extends FieldItemBase {
+
   /**
    * {@inheritdoc}
    */
   public static function defaultStorageSettings() {
-    return array(
+    return [
       'max_length' => 255,
       'is_ascii' => FALSE,
       'case_sensitive' => FALSE,
-    ) + parent::defaultStorageSettings();
+    ] + parent::defaultStorageSettings();
   }
 
   /**
@@ -48,6 +44,9 @@ class FormstackForm extends FieldItemBase {
       ->setSetting('case_sensitive', $field_definition->getSetting('case_sensitive'))
       ->setRequired(TRUE);
 
+    $properties['settings'] = DataDefinition::create('any')
+      ->setLabel(new TranslatableMarkup('Settings'));
+
     return $properties;
   }
 
@@ -55,15 +54,19 @@ class FormstackForm extends FieldItemBase {
    * {@inheritdoc}
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
-    $schema = array(
-      'columns' => array(
-        'formstack_id' => array(
+    $schema = [
+      'columns' => [
+        'formstack_id' => [
           'type' => $field_definition->getSetting('is_ascii') === TRUE ? 'varchar_ascii' : 'varchar',
           'length' => (int) $field_definition->getSetting('max_length'),
           'binary' => $field_definition->getSetting('case_sensitive'),
-        ),
-      ),
-    );
+        ],
+        'settings' => [
+          'type' => 'blob',
+          'serialized' => TRUE,
+        ],
+      ],
+    ];
 
     return $schema;
   }
@@ -73,7 +76,7 @@ class FormstackForm extends FieldItemBase {
    */
   public function getConstraints() {
     $constraints = parent::getConstraints();
-    
+
     return $constraints;
   }
 
@@ -91,7 +94,6 @@ class FormstackForm extends FieldItemBase {
    */
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
     $elements = [];
-
 
     return $elements;
   }

@@ -4,4 +4,3 @@ formstack.formstack_config_form:
   description: 'Formstack settings'
   parent: system.admin_config_services
   weight: 99
-

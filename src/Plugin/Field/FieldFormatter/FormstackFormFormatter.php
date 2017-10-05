@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\formstack\Plugin\Field\FieldFormatter\FormstackFormFormatter.
- */
-
 namespace Drupal\formstack\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
@@ -15,6 +10,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\formstack\Formstack;
+use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -33,7 +29,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
   /**
-   * @var Formstack
+   * @var \Drupal\formstack\Formstack
    */
   private $formstack;
 
@@ -41,18 +37,18 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public static function defaultSettings() {
-    return array(
+    return [
       // Implement default settings.
-    ) + parent::defaultSettings();
+    ] + parent::defaultSettings();
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    return array(
+    return [
       // Implement settings form.
-    ) + parent::settingsForm($form, $form_state);
+    ] + parent::settingsForm($form, $form_state);
   }
 
   /**
@@ -87,18 +83,42 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
    */
   protected function viewValue(FieldItemInterface $item) {
     $result = $this->formstack->form($item->formstack_id);
+    $embed = Html::decodeEntities($result->getResult()->javascript);
 
+    // Get settings and extract default values setting.
+    if (!empty($item->settings)) {
+      $settings = unserialize($item->settings);
+    }
+    if (!empty($settings['default_values'])) {
+      $user = User::load(\Drupal::currentUser()->id());
+      $data = compact('user');
+      $token = \Drupal::token();
+      foreach ($settings['default_values'] as $k => &$v) {
+        $v = $token->replace($v, $data);
+      }
+      // If we have default values, inject them into the embed code.
+      // TODO: handle if already has a query string.
+      $query = http_build_query($settings['default_values']);
+      $embed = preg_replace('/^(.*<script.*?src=")(.*?)(".*)$/', "$1$2?{$query}$3", $embed);
+    }
+
+
+
+    // Check to see if we have set any default values, and if so adjust embed URL accordingly.
     return [
-        '#type' => 'inline_template',
-        '#template' => '{{ value|raw }}',
-        '#context' => ['value' => Html::decodeEntities($result->getResult()->javascript)],
+      '#type' => 'inline_template',
+      '#template' => '{{ value|raw }}',
+      '#context' => ['value' => $embed],
     ];
   }
 
+  /**
+   *
+   */
   public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, Formstack $formstack) {
-  {
+    {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
-  }
+    }
     $this->formstack = $formstack;
   }
 
@@ -117,8 +137,7 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
    * @return static
    *   Returns an instance of this plugin.
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
-  {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
         $plugin_id,
         $plugin_definition,
@@ -130,4 +149,5 @@ class FormstackFormFormatter extends FormatterBase implements ContainerFactoryPl
         $container->get('formstack.formstack')
     );
   }
+
 }
