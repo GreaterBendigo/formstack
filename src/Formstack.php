@@ -66,6 +66,38 @@ class Formstack implements ContainerInjectionInterface
     }
 
     /**
+     * Makes a Formstack API POST request.
+     *
+     * This function uses v2 of the Formstack API
+     * and returns a JSON decoded response.
+     *
+     * @param string $method
+     *   The API web method
+     * @param array $args
+     *   The parameters for the API request
+     * @return FormstackResult The JSON decodes response
+     * The JSON decodes response
+     */
+    public function post($method, $args = array()) {
+      $oauth_token = $this->config->get('access_token');
+      if (!empty($oauth_token)) {
+          $url = self::$apiUrl . "/" . $method . '.json';
+          try {
+              $response = Drupal::httpClient()->post($url, array('body' => json_encode($args, TRUE), 'headers' => array('Authorization' => 'Bearer ' . $oauth_token, 'Accept' => 'application/json', 'Content-Type' =>  'application/json')));
+              return new FormstackResult($response);
+          }
+          catch (RequestException $e) {
+              watchdog_exception('formstack', $e);
+          }
+
+          return new FormstackResult();
+      }
+      else {
+          return new FormstackResult();
+      }
+  }
+
+    /**
      * @param null $form_id
      * @return FormstackResult
      */
