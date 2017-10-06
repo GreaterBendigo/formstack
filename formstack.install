@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update hooks.
+ */
+
+/**
+ * Add meta column for storing serialized configuration for the Formstack form.
+ * via https://drupal.stackexchange.com/questions/205747/how-to-add-a-property-to-a-field-type-having-data
+ */
+function formstack_update_8001() {
+  $field_type = 'formstack_form';
+  $new_property = 'settings';
+  try {
+    $manager = \Drupal::entityDefinitionUpdateManager();
+    $field_map = \Drupal::entityManager()->getFieldMapByFieldType($field_type);
+    foreach ($field_map as $entity_type_id => $fields) {
+      foreach (array_keys($fields) as $field_name) {
+        $field_storage_definition = $manager->getFieldStorageDefinition($field_name, $entity_type_id);
+        $storage = \Drupal::entityTypeManager()->getStorage($entity_type_id);
+        if ($storage instanceof \Drupal\Core\Entity\Sql\SqlContentEntityStorage) {
+          $table_mapping = $storage->getTableMapping([
+            // We pass only one storage definition to make
+            // \Drupal\Core\Entity\Sql\DefaultTableMapping::getDedicatedTableNames()
+            // return only tables we need.
+            $field_name => $field_storage_definition,
+          ]);
+          $table_names = $table_mapping->getDedicatedTableNames();
+          $columns = $table_mapping->getColumnNames($field_name);
+          foreach ($table_names as $table_name) {
+            $field_schema = $field_storage_definition->getSchema();
+            \Drupal::database()
+              ->schema()
+              ->addField($table_name, $columns[$new_property], $field_schema['columns'][$new_property]);
+          }
+        }
+        $manager->updateFieldStorageDefinition($field_storage_definition);
+      }
+    }
+  }
+  catch (\Exception $e) {
+    watchdog_exception('formstack', $e);
+  }
+}

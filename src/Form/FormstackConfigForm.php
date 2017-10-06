@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains Drupal\formstack\Form\FormstackConfigForm.
- */
-
 namespace Drupal\formstack\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -26,21 +21,27 @@ class FormstackConfigForm extends ConfigFormBase {
    * @var Drupal\Core\Config\ConfigManager
    */
   protected $config_manager;
+
+  /**
+   *
+   */
   public function __construct(
     ConfigFactoryInterface $config_factory,
       ConfigManager $config_manager
     ) {
     parent::__construct($config_factory);
-        $this->config_manager = $config_manager;
+    $this->config_manager = $config_manager;
   }
 
+  /**
+   *
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
             $container->get('config.manager')
     );
   }
-
 
   /**
    * {@inheritdoc}
