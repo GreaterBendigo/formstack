@@ -7,6 +7,7 @@
 
 /**
  * Add meta column for storing serialized configuration for the Formstack form.
+ * via https://drupal.stackexchange.com/questions/205747/how-to-add-a-property-to-a-field-type-having-data
  */
 function formstack_update_8001() {
   $field_type = 'formstack_form';
